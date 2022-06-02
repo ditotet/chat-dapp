@@ -1,17 +1,18 @@
 <script>
   import { user } from "./user";
+  import { setAlertMessage } from './alert';
 
   let username = "";
   let password = "";
 
   const login = () => {
-    user.auth(username, password, ({ err }) => err && alert(err));
+    user.auth(username, password, ({ err }) => err && setAlertMessage(err));
   };
 
   const signup = () => {
     user.create(username, password, ({ err }) => {
       if (err) {
-        alert(err);
+        setAlertMessage(err);
         return;
       }
       login();
@@ -38,7 +39,6 @@
 <style>
   .login-card {
     margin: 0 auto;
-    margin-top: 5%;
   }
 </style>
 

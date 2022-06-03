@@ -10,7 +10,8 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
-    "rollup": "^2.3.4",
+    "@rollup/plugin-replace": "^4.0.0",
+    "rollup": "^2.75.5",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.1.3",
+    "dotenv": "^16.0.1",
     "gun": "^0.2020.1237",
     "sirv-cli": "^2.0.0"
   }

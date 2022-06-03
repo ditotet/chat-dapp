@@ -1,235 +1,99 @@
+<script>
+  import GUN from 'gun';
+  import { onMount } from 'svelte';
+  import { user, username } from './user';
+
+  const db = GUN();
+
+  let newMessage;
+  let messages = [];
+
+  const timestampToCustomFormat = (timestamp) => {
+    let date = new Date(timestamp);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    const strTime = hours + ':' + minutes + ampm;
+    return strTime;
+  };
+
+  onMount(() => {
+    db.get('chat-dapp-messages')
+      .map()
+      .once(async (data, id) => {
+          console.log(data)
+          if (data) {
+            const key = 'Secret key!!!';
+
+            const message = {
+              who: await db.user(data).get('alias'),
+              what: (await SEA.decrypt(data.what, key)) + '',
+              when: GUN.state.is(data, 'what')
+            }
+
+            if (message.what) {
+              messages = [...messages.slice(-100), message]
+            }
+          }
+      });
+  })
+
+  const sendMessage = async () => {
+    if (newMessage) {
+      console.log('ya')
+      const secret = await SEA.encrypt(newMessage, 'Secret key!!!');
+      const message = user.get('all').set({ what: secret });
+      const index = new Date().toISOString();
+
+      db.get('chat-dapp-messages').get(index).put(message);
+      newMessage = '';
+    }
+  }
+
+</script>
 <div class="chat-wrapper card col-sm-10">
   <div class="col-12">
 
     <div class="position-relative">
       <div class="chat-messages p-4">
-        <div class="chat-message-right pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+        {#each messages as message (message.when)}
+          <div class={(message.who == $username ? "chat-message-right" : "chat-message-left") + " pb-4"}>
+            <div>
+              <img
+                src={`https://avatars.dicebear.com/api/miniavs/${message.who}.svg`}
+                class="rounded-circle mr-1"
+                alt="IMG"
+                width="40"
+                height="40"
+              />
+              <div class="text-muted small text-nowrap mt-2">{timestampToCustomFormat(message.when)}</div>
+            </div>
+            <div class="flex-shrink-1 bg-light rounded py-2 px-3 ms-3 me-3">
+              <div class="font-weight-bold mb-1">{message.who == $username ? "You" : message.who }</div>
+              {message.what}
+            </div>
           </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te
-            vix.
-          </div>
-        </div>
 
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:34 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal
-            commodo.
-          </div>
-        </div>
-
-        <div class="chat-message-right mb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:35 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Cum ea graeci tractatos.
-          </div>
-        </div>
-
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:36 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Sed pulvinar, massa vitae interdum pulvinar, risus lectus porttitor magna,
-            vitae commodo lectus mauris et velit. Proin ultricies placerat imperdiet.
-            Morbi varius quam ac venenatis tempus.
-          </div>
-        </div>
-
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:37 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Cras pulvinar, sapien id vehicula aliquet, diam velit elementum orci.
-          </div>
-        </div>
-
-        <div class="chat-message-right mb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:38 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te
-            vix.
-          </div>
-        </div>
-
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:39 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal
-            commodo.
-          </div>
-        </div>
-
-        <div class="chat-message-right mb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:40 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Cum ea graeci tractatos.
-          </div>
-        </div>
-
-        <div class="chat-message-right mb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:41 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Morbi finibus, lorem id placerat ullamcorper, nunc enim ultrices massa,
-            id dignissim metus urna eget purus.
-          </div>
-        </div>
-
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:42 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Sed pulvinar, massa vitae interdum pulvinar, risus lectus porttitor magna,
-            vitae commodo lectus mauris et velit. Proin ultricies placerat imperdiet.
-            Morbi varius quam ac venenatis tempus.
-          </div>
-        </div>
-
-        <div class="chat-message-right mb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-              class="rounded-circle mr-1"
-              alt="Chris Wood"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:43 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-            <div class="font-weight-bold mb-1">You</div>
-            Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te
-            vix.
-          </div>
-        </div>
-
-        <div class="chat-message-left pb-4">
-          <div>
-            <img
-              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-              class="rounded-circle mr-1"
-              alt="Sharon Lessman"
-              width="40"
-              height="40"
-            />
-            <div class="text-muted small text-nowrap mt-2">2:44 am</div>
-          </div>
-          <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-            <div class="font-weight-bold mb-1">Sharon Lessman</div>
-            Sit meis deleniti eu, pri vidit meliore docendi ut, an eum erat animal
-            commodo.
-          </div>
-        </div>
+        {/each}
       </div>
     </div>
 
-    <div class="flex-grow-0 py-3 px-4 border-top">
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Type your message"
-        />
-        <button class="btn btn-primary">Send</button>
+    <form on:submit|preventDefault={sendMessage}>
+      <div class="flex-grow-0 py-3 px-4 border-top">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Type your message"
+            bind:value={newMessage}
+          />
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
       </div>
-    </div>
+  </form>
   </div>
 </div>
 
@@ -253,7 +117,7 @@
   .chat-messages {
     display: flex;
     flex-direction: column;
-    max-height: 70vh;
+    height: 70vh;
     overflow-y: scroll;
   }
 

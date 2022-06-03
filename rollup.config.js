@@ -80,16 +80,6 @@ export default {
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
 		production && terser(),
-
-		replace({
-			// stringify the object       
-			process: JSON.stringify({
-				env: {
-					isProd: production,
-					...config().parsed // attached the .env config
-				}
-			}),
-		})
 	],
 	watch: {
 		clearScreen: false
